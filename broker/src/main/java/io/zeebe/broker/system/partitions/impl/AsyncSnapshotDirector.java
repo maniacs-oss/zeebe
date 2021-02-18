@@ -199,7 +199,6 @@ public final class AsyncSnapshotDirector extends Actor {
               if (pendingSnapshot != null
                   && lastWrittenEventPosition != null
                   && currentCommitPosition >= lastWrittenEventPosition) {
-
                 final var snapshotPersistFuture = pendingSnapshot.persist();
 
                 snapshotPersistFuture.onComplete(

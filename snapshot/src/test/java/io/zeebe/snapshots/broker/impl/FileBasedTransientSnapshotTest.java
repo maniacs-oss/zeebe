@@ -137,7 +137,7 @@ public class FileBasedTransientSnapshotTest {
   }
 
   @Test
-  public void shouldPurgePendingOnStore() throws Exception {
+  public void shouldPurgePendingOnStore() {
     // given
     final var index = 1L;
     final var term = 0L;
@@ -153,7 +153,7 @@ public class FileBasedTransientSnapshotTest {
   }
 
   @Test
-  public void shouldNotDeletePersistedSnapshotOnPurge() throws Exception {
+  public void shouldNotDeletePersistedSnapshotOnPurge() {
     // given
     final var index = 1L;
     final var term = 0L;
@@ -497,6 +497,34 @@ public class FileBasedTransientSnapshotTest {
     assertThatThrownBy(persisted::join)
         .hasCauseInstanceOf(IllegalStateException.class)
         .hasMessageContaining("Snapshot is not valid");
+  }
+
+  @Test
+  public void shouldPersistIdempotently() {
+    // given
+    final var index = 1L;
+    final var term = 2L;
+    final var transientSnapshot =
+        persistedSnapshotStore.newTransientSnapshot(index, term, 3, 4).orElseThrow();
+    transientSnapshot.take(this::createSnapshotDir).join();
+
+    // when
+    final var firstFuture = transientSnapshot.persist();
+    final var secondFuture = transientSnapshot.persist();
+
+    // then
+    final var firstSnapshot = firstFuture.join();
+    final var secondSnapshot = secondFuture.join();
+
+    assertThat(firstSnapshot).isEqualTo(secondSnapshot);
+    assertThat(pendingSnapshotsDir.toFile().listFiles()).isEmpty();
+    final var snapshotDirs = snapshotsDir.toFile().listFiles();
+    assertThat(snapshotDirs).isNotNull().hasSize(1);
+    final var snapshotDir = snapshotDirs[0];
+    assertThat(snapshotDir.listFiles())
+        .isNotNull()
+        .extracting(File::getName)
+        .containsExactlyInAnyOrder("file1.txt", "CHECKSUM");
   }
 
   private boolean createSnapshotDir(final Path path) {
