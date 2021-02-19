@@ -25,6 +25,7 @@ import io.zeebe.journal.JournalReader;
 import io.zeebe.journal.JournalRecord;
 import io.zeebe.journal.StorageException.InvalidChecksum;
 import io.zeebe.journal.StorageException.InvalidIndex;
+import io.zeebe.journal.file.record.PersistedJournalRecord;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;

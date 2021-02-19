@@ -17,6 +17,7 @@
 package io.zeebe.journal.file;
 
 import io.zeebe.journal.JournalRecord;
+import io.zeebe.journal.file.record.JournalRecordReaderUtil;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel.MapMode;
 import java.util.NoSuchElementException;
@@ -30,7 +31,7 @@ class MappedJournalSegmentReader {
   private final JournalSegment segment;
   private JournalRecord currentEntry;
   private JournalRecord nextEntry;
-  private final JournalRecordReaderWriter recordReader;
+  private final JournalRecordReaderUtil recordReader;
 
   MappedJournalSegmentReader(
       final JournalSegmentFile file,
@@ -39,7 +40,7 @@ class MappedJournalSegmentReader {
       final JournalIndex index) {
     this.index = index;
     this.segment = segment;
-    recordReader = new JournalRecordReaderWriter(maxEntrySize);
+    recordReader = new JournalRecordReaderUtil(maxEntrySize);
     buffer =
         IoUtil.mapExistingFile(
             file.file(), MapMode.READ_ONLY, file.name(), 0, segment.descriptor().maxSegmentSize());

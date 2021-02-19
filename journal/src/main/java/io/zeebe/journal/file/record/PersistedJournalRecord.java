@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.zeebe.journal.file;
+package io.zeebe.journal.file.record;
 
 import io.zeebe.journal.JournalRecord;
 import org.agrona.DirectBuffer;
 
 /** Journal Record */
-class PersistedJournalRecord implements JournalRecord {
+public class PersistedJournalRecord implements JournalRecord {
 
   private final DirectBuffer data;
   private final long index;
