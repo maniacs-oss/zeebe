@@ -7,7 +7,6 @@
  */
 package io.zeebe.engine.state.appliers;
 
-import io.zeebe.engine.processing.bpmn.behavior.BpmnStateBehavior;
 import io.zeebe.engine.state.TypedEventApplier;
 import io.zeebe.engine.state.ZeebeState;
 import io.zeebe.engine.state.mutable.MutableElementInstanceState;
@@ -15,15 +14,13 @@ import io.zeebe.protocol.impl.record.value.workflowinstance.WorkflowInstanceReco
 import io.zeebe.protocol.record.intent.WorkflowInstanceIntent;
 
 /** Applies state changes for `WorkflowInstance:Element_Activating` */
-public class WorkflowInstanceElementActivatingApplier
+final class WorkflowInstanceElementActivatingApplier
     implements TypedEventApplier<WorkflowInstanceIntent, WorkflowInstanceRecord> {
 
   private final MutableElementInstanceState elementInstanceState;
-  private final BpmnStateBehavior stateBehavior;
 
   public WorkflowInstanceElementActivatingApplier(final ZeebeState state) {
     elementInstanceState = state.getElementInstanceState();
-    stateBehavior = new BpmnStateBehavior(state);
   }
 
   @Override

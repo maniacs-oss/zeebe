@@ -45,17 +45,37 @@ public final class EventAppliers implements EventApplier {
   private final Map<Intent, TypedEventApplier> mapping = new HashMap<>();
 
   public EventAppliers(final ZeebeState state) {
+    registerWorkflowInstanceEventAppliers(state);
+
+    register(WorkflowIntent.CREATED, new WorkflowCreatedApplier(state));
+    register(DeploymentDistributionIntent.DISTRIBUTING, new DeploymentDistributionApplier(state));
+
+    register(MessageIntent.EXPIRED, new MessageExpiredApplier(state.getMessageState()));
+    registerJobIntentEventAppliers(state);
+  }
+
+  private void registerWorkflowInstanceEventAppliers(final ZeebeState state) {
     register(
         WorkflowInstanceIntent.ELEMENT_ACTIVATING,
         new WorkflowInstanceElementActivatingApplier(state));
     register(
         WorkflowInstanceIntent.ELEMENT_ACTIVATED,
         new WorkflowInstanceElementActivatedApplier(state));
-    register(WorkflowIntent.CREATED, new WorkflowCreatedApplier(state));
-    register(DeploymentDistributionIntent.DISTRIBUTING, new DeploymentDistributionApplier(state));
-
-    register(MessageIntent.EXPIRED, new MessageExpiredApplier(state.getMessageState()));
-    registerJobIntentEventAppliers(state);
+    register(
+        WorkflowInstanceIntent.ELEMENT_COMPLETING,
+        new WorkflowInstanceElementCompletingApplier(state));
+    register(
+        WorkflowInstanceIntent.ELEMENT_COMPLETED,
+        new WorkflowInstanceElementCompletedApplier(state));
+    register(
+        WorkflowInstanceIntent.ELEMENT_TERMINATING,
+        new WorkflowInstanceElementTerminatingApplier(state));
+    register(
+        WorkflowInstanceIntent.ELEMENT_TERMINATED,
+        new WorkflowInstanceElementTerminatedApplier(state));
+    register(
+        WorkflowInstanceIntent.SEQUENCE_FLOW_TAKEN,
+        new WorkflowInstanceSequenceFlowTakenApplier(state));
   }
 
   private void registerJobIntentEventAppliers(final ZeebeState state) {
